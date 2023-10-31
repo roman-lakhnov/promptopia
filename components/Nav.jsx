@@ -1,20 +1,19 @@
 'use client'
-import { getProviders, signIn, signOut } from 'next-auth'
+import { getProviders, useSession, signIn, signOut } from 'next-auth/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 const Nav = () => {
-	const [isUserLoggedIn, setIsUserLoggedIn] = useState(true)
+	const {data:session}=useSession()
 	const [providers, setProviders] = useState(null)
 	const [toggleDropdown, setToggleDropdown] = useState(false)
 
 	useEffect(() => {
-		const setProviders = async () => {
+		;(async () => {
 			const response = await getProviders()
 			setProviders(response)
-		}
-		setProviders()
+		})()
 	}, [])
 
 	return (
@@ -30,7 +29,7 @@ const Nav = () => {
 				<p className='logo_text'>Promptopia</p>
 			</Link>
 			<div className='sm:flex hidden'>
-				{isUserLoggedIn ? (
+				{session?.user ? (
 					<div className='flex gap-3 md:gap-5'>
 						<Link href='/create-prompt' className='black_btn'>
 							Create Post
@@ -66,7 +65,7 @@ const Nav = () => {
 				)}
 			</div>
 			<div className='sm:hidden flex relative'>
-				{isUserLoggedIn ? (
+				{session?.user ? (
 					<div className='flex'>
 						<Image
 							src='/assets/images/logo.svg'
@@ -99,7 +98,9 @@ const Nav = () => {
 										signOut()
 									}}
 									className='mt-5 w-full black_btn'
-								>Sign Out</button>
+								>
+									Sign Out
+								</button>
 							</div>
 						)}
 					</div>
